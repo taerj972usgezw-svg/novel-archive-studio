@@ -1,0 +1,13 @@
+{
+  "name": "novel-archive-studio",
+  "version": "1.0.0",
+  "description": "웹소설 연재 및 보관 스튜디오 [소설.메인.한국]",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
+  }
+}
