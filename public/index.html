@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>소설 아카이브 스튜디오 | 소설.메인.한국</title>
+  
+  <!-- SEO & OpenGraph 메타태그 -->
+  <meta name="description" content="나만의 웹소설을 집필하고 안전하게 보관하는 웹소설 연재 & 뷰어 플랫폼. 30가지 특화 기능, 1화 정주행, TTS 오디오북 지원.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="소설 아카이브 스튜디오 - 소설.메인.한국">
+  <meta property="og:description" content="웹소설 집필, 회차 연재, 첫편부터 정주행, 몰입형 뷰어와 TTS 오디오북까지!">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=1200&auto=format&fit=crop&q=80">
+  <meta property="og:url" content="http://소설.메인.한국">
+
+  <!-- 폰트: KoPub 바탕, Pretendard, FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-light">
+
+  <!-- 상단 독서 진행 바 (뷰어 전용) -->
+  <div id="reader-progress-bar" class="reader-progress-bar" style="width: 0%;"></div>
+
+  <!-- 메인 헤더 내비게이션 -->
+  <header id="main-header" class="main-header">
+    <div class="header-container">
+      <div class="logo-area" onclick="navigate('home')">
+        <div class="logo-icon"><i class="fa-solid fa-feather-pointed"></i></div>
+        <div class="logo-text">
+          <span class="logo-title">소설.메인.한국</span>
+          <span class="logo-sub">NOVEL ARCHIVE STUDIO</span>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <button class="nav-btn active" data-view="home" onclick="navigate('home')"><i class="fa-solid fa-compass"></i> <span>탐색</span></button>
+        <button class="nav-btn" data-view="library" onclick="navigate('library')"><i class="fa-solid fa-bookmark"></i> <span>내 서재</span></button>
+        <button class="nav-btn btn-highlight" data-view="studio" onclick="navigate('studio')"><i class="fa-solid fa-pen-nib"></i> <span>스튜디오 (집필)</span></button>
+        <button class="nav-btn" id="header-user-btn" onclick="openAuthModal()"><i class="fa-regular fa-user"></i> <span>로그인/가입</span></button>
+        <button class="nav-btn btn-admin" onclick="openAdminModal()"><i class="fa-solid fa-shield-halved"></i> <span>관리자</span></button>
+      </nav>
+
+      <button class="mobile-menu-toggle" onclick="toggleMobileNav()"><i class="fa-solid fa-bars"></i></button>
+    </div>
+
+    <!-- 모바일 드롭다운 메뉴 -->
+    <div id="mobile-nav-dropdown" class="mobile-nav-dropdown hidden">
+      <button class="m-nav-item" onclick="navigate('home'); toggleMobileNav();"><i class="fa-solid fa-compass"></i> 소설 탐색</button>
+      <button class="m-nav-item" onclick="navigate('library'); toggleMobileNav();"><i class="fa-solid fa-bookmark"></i> 내 서재 / 이어보기</button>
+      <button class="m-nav-item highlight" onclick="navigate('studio'); toggleMobileNav();"><i class="fa-solid fa-pen-nib"></i> 집필 스튜디오 (새 소설/회차)</button>
+      <button class="m-nav-item" onclick="openAuthModal(); toggleMobileNav();"><i class="fa-regular fa-user"></i> <span id="m-user-text">1초 간편 로그인/가입</span></button>
+      <button class="m-nav-item" onclick="openAdminModal(); toggleMobileNav();"><i class="fa-solid fa-shield-halved"></i> 최고 관리자 대시보드</button>
+    </div>
+  </header>
+
+  <!-- 웹포워딩 안내 웰컴 배너 -->
+  <div id="domain-banner" class="domain-banner">
+    <div class="banner-content">
+      <span class="badge-pulse"><i class="fa-solid fa-globe"></i> 공식 도메인</span>
+      <span class="banner-text"><strong>소설.메인.한국</strong> 웹포워딩 정상 연결! 나만의 소설을 집필하고 영구 보관하세요.</span>
+      <button class="banner-close" onclick="closeDomainBanner()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  </div>
+
+  <!-- 메인 컨텐츠 영역 (SPA Views) -->
+  <main class="main-content">
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 1. 메인 탐색 뷰 (HOME) -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section id="view-home" class="spa-view active">
+      <!-- 히어로 섹션 -->
+      <div class="hero-section">
+        <div class="hero-badge"><i class="fa-solid fa-sparkles"></i> 프리미엄 웹소설 아카이브</div>
+        <h1 class="hero-title">당신의 상상이<br><span class="gradient-text">영원한 이야기</span>가 되는 곳</h1>
+        <p class="hero-desc">회차별 집필, 표지 등록, 1화 정주행, 몰입형 뷰어와 TTS 오디오북까지 30가지 특화 기능을 무료로 경험하세요.</p>
+        <div class="hero-actions">
+          <button class="btn-hero-primary" onclick="navigate('studio')"><i class="fa-solid fa-pen-fancy"></i> 지금 소설 집필하기</button>
+          <button class="btn-hero-secondary" onclick="scrollToNovels()"><i class="fa-solid fa-book-open"></i> 인기 소설 둘러보기</button>
+        </div>
+
+        <!-- 실시간 지표 뱃지 바 -->
+        <div class="hero-stats-bar">
+          <div class="h-stat-item">
+            <span class="h-stat-num" id="stat-total-novels">-</span>
+            <span class="h-stat-label">보관 작품</span>
+          </div>
+          <div class="h-stat-divider"></div>
+          <div class="h-stat-item">
+            <span class="h-stat-num" id="stat-total-episodes">-</span>
+            <span class="h-stat-label">누적 연재 회차</span>
+          </div>
+          <div class="h-stat-divider"></div>
+          <div class="h-stat-item">
+            <span class="h-stat-num" id="stat-total-views">-</span>
+            <span class="h-stat-label">총 누적 열람</span>
+          </div>
+          <div class="h-stat-divider"></div>
+          <div class="h-stat-item">
+            <span class="h-stat-num" id="stat-total-words">-</span>
+            <span class="h-stat-label">총 집필 글자수</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 탐색 필터 바 -->
+      <div id="novels-catalog-section" class="catalog-section">
+        <div class="catalog-header">
+          <div class="genre-tabs" id="genre-tabs">
+            <button class="genre-tab active" data-genre="전체">전체</button>
+            <button class="genre-tab" data-genre="판타지">판타지</button>
+            <button class="genre-tab" data-genre="로맨스판타지">로판</button>
+            <button class="genre-tab" data-genre="무협">무협</button>
+            <button class="genre-tab" data-genre="현대판타지">현판</button>
+            <button class="genre-tab" data-genre="SF">SF</button>
+            <button class="genre-tab" data-genre="미스터리">미스터리</button>
+          </div>
+
+          <div class="catalog-controls">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="novel-search-input" placeholder="작품명, 작가, 줄거리 검색..." oninput="onSearchChange()">
+            </div>
+            <select id="novel-sort-select" class="sort-select" onchange="onSortChange()">
+              <option value="latest">최신 등록순</option>
+              <option value="views">조회수 높은순</option>
+              <option value="likes">추천 많은순</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 소설 카드 그리드 -->
+        <div class="novels-grid" id="novels-grid">
+          <!-- JS 동적 렌더링 -->
+          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> 소설 목록을 불러오는 중...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 2. 작품 상세 뷰 (NOVEL DETAIL) -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section id="view-detail" class="spa-view hidden">
+      <div class="detail-container">
+        <button class="btn-back" onclick="navigate('home')"><i class="fa-solid fa-arrow-left"></i> 목록으로 돌아가기</button>
+
+        <!-- 작품 상단 정보 카드 -->
+        <div class="novel-detail-card" id="novel-detail-card">
+          <!-- JS 렌더링 -->
+        </div>
+
+        <!-- 회차 목록 영역 -->
+        <div class="episodes-list-section">
+          <div class="ep-header-bar">
+            <h3><i class="fa-solid fa-list-ol"></i> 연재 회차 목록 (<span id="detail-episodes-count">0</span>화)</h3>
+            <div class="ep-sort-btn-group">
+              <button class="btn-ep-sort active" id="btn-sort-asc" onclick="setEpisodesSort('asc')">1화부터 보기</button>
+              <button class="btn-ep-sort" id="btn-sort-desc" onclick="setEpisodesSort('desc')">최신화부터 보기</button>
+            </div>
+          </div>
+
+          <div class="episodes-list" id="detail-episodes-list">
+            <!-- JS 렌더링 -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 3. 몰입형 소설 리더/뷰어 뷰 (READER) -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section id="view-reader" class="spa-view hidden">
+      <!-- 상단 리더 툴바 (플로팅) -->
+      <div class="reader-floating-header" id="reader-header">
+        <div class="rf-left">
+          <button class="rf-btn" onclick="exitReader()" title="작품 상세로 돌아가기"><i class="fa-solid fa-chevron-left"></i></button>
+          <div class="rf-titles">
+            <span class="rf-novel-title" id="rf-novel-title">소설 제목</span>
+            <span class="rf-ep-title" id="rf-ep-title">제 1화</span>
+          </div>
+        </div>
+
+        <div class="rf-actions">
+          <!-- TTS 오디오 버튼 -->
+          <button class="rf-btn" id="btn-tts-toggle" onclick="toggleTTS()" title="TTS 음성 읽기"><i class="fa-solid fa-headphones"></i></button>
+          <!-- 앰비언스 BGM 버튼 -->
+          <button class="rf-btn" id="btn-bgm-toggle" onclick="openBgmModal()" title="배경음 / 앰비언스"><i class="fa-solid fa-music"></i></button>
+          <!-- 목차 드로어 열기 -->
+          <button class="rf-btn" onclick="openTocModal()" title="전체 목차"><i class="fa-solid fa-list"></i></button>
+          <!-- 폰트 & 뷰어 설정 열기 -->
+          <button class="rf-btn" onclick="toggleReaderSettings()" title="뷰어 글꼴/테마 설정"><i class="fa-solid fa-sliders"></i></button>
+          <!-- 전체화면 토글 -->
+          <button class="rf-btn" onclick="toggleFullscreen()" title="전체화면 몰입 모드"><i class="fa-solid fa-expand"></i></button>
+        </div>
+      </div>
+
+      <!-- 리더 뷰어 설정 패널 (드로어/팝업) -->
+      <div id="reader-settings-panel" class="reader-settings-panel hidden">
+        <div class="rsp-header">
+          <h4><i class="fa-solid fa-palette"></i> 뷰어 환경 설정</h4>
+          <button class="rsp-close" onclick="toggleReaderSettings()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="rsp-body">
+          <!-- 1. 테마 선택 -->
+          <div class="rsp-group">
+            <label class="rsp-label">배경 테마</label>
+            <div class="theme-options">
+              <button class="theme-chip active" data-theme="theme-light" onclick="setReaderTheme('theme-light')">
+                <span class="color-dot dot-light"></span> 화이트
+              </button>
+              <button class="theme-chip" data-theme="theme-sepia" onclick="setReaderTheme('theme-sepia')">
+                <span class="color-dot dot-sepia"></span> 세피아
+              </button>
+              <button class="theme-chip" data-theme="theme-dark" onclick="setReaderTheme('theme-dark')">
+                <span class="color-dot dot-dark"></span> 차콜다크
+              </button>
+              <button class="theme-chip" data-theme="theme-oled" onclick="setReaderTheme('theme-oled')">
+                <span class="color-dot dot-oled"></span> OLED블랙
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. 글꼴(폰트) 선택 -->
+          <div class="rsp-group">
+            <label class="rsp-label">글꼴 (Font)</label>
+            <div class="font-options">
+              <button class="font-chip active" data-font="font-serif" onclick="setReaderFont('font-serif')">KoPub 바탕 (명조)</button>
+              <button class="font-chip" data-font="font-sans" onclick="setReaderFont('font-sans')">프리텐다드 (고딕)</button>
+              <button class="font-chip" data-font="font-myeongjo" onclick="setReaderFont('font-myeongjo')">나눔 명조</button>
+              <button class="font-chip" data-font="font-gothic" onclick="setReaderFont('font-gothic')">나눔 고딕</button>
+            </div>
+          </div>
+
+          <!-- 3. 글자 크기 -->
+          <div class="rsp-group">
+            <div class="rsp-label-row">
+              <span class="rsp-label">글자 크기</span>
+              <span class="rsp-val" id="val-font-size">18px</span>
+            </div>
+            <div class="range-row">
+              <button class="btn-range-adj" onclick="adjustFontSize(-1)">A-</button>
+              <input type="range" id="range-font-size" min="14" max="28" value="18" oninput="onFontSizeInput(this.value)">
+              <button class="btn-range-adj" onclick="adjustFontSize(1)">A+</button>
+            </div>
+          </div>
+
+          <!-- 4. 줄간격 -->
+          <div class="rsp-group">
+            <div class="rsp-label-row">
+              <span class="rsp-label">줄간격</span>
+              <span class="rsp-val" id="val-line-height">1.9배</span>
+            </div>
+            <input type="range" id="range-line-height" min="1.4" max="2.6" step="0.1" value="1.9" oninput="onLineHeightInput(this.value)">
+          </div>
+
+          <!-- 5. 뷰어 본문 너비 -->
+          <div class="rsp-group">
+            <label class="rsp-label">본문 가로폭</label>
+            <div class="width-options">
+              <button class="width-chip" data-width="w-narrow" onclick="setReaderWidth('w-narrow')">슬림 (600px)</button>
+              <button class="width-chip active" data-width="w-normal" onclick="setReaderWidth('w-normal')">보통 (740px)</button>
+              <button class="width-chip" data-width="w-wide" onclick="setReaderWidth('w-wide')">와이드 (880px)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 리더 본문 컨테이너 -->
+      <div class="reader-wrapper font-serif w-normal" id="reader-wrapper">
+        <div class="reader-meta-box">
+          <div class="rm-novel-name" id="rm-novel-name">소설명</div>
+          <h1 class="rm-ep-name" id="rm-ep-name">회차 제목</h1>
+          <div class="rm-info-tags">
+            <span id="rm-author"><i class="fa-solid fa-pen-nib"></i> 작가</span>
+            <span id="rm-date"><i class="fa-regular fa-clock"></i> 2026.09.10</span>
+            <span id="rm-char-count"><i class="fa-solid fa-font"></i> 3,420자</span>
+            <span id="rm-read-time"><i class="fa-solid fa-stopwatch"></i> 약 3분</span>
+          </div>
+        </div>
+
+        <hr class="rm-divider">
+
+        <!-- 실제 소설 본문 내용 -->
+        <article class="reader-article" id="reader-article">
+          <!-- 문단들이 동적으로 p 태그로 주입 -->
+        </article>
+
+        <!-- 작가의 말 카드 -->
+        <div class="author-note-card" id="author-note-card">
+          <div class="anc-header">
+            <span><i class="fa-solid fa-comment-dots"></i> <strong>작가의 말</strong></span>
+          </div>
+          <div class="anc-body" id="anc-body">작가의 말이 없습니다.</div>
+        </div>
+
+        <!-- 하단 회차 인터랙션 (추천, 공유, 다운로드) -->
+        <div class="reader-interaction-bar">
+          <button class="btn-like-ep" id="btn-like-ep" onclick="likeCurrentEpisode()">
+            <i class="fa-solid fa-heart"></i> 회차 추천 <span id="ep-likes-count">0</span>
+          </button>
+          <button class="btn-action-ep" onclick="downloadCurrentEpisodeTxt()">
+            <i class="fa-solid fa-download"></i> 이 화 텍스트 소장
+          </button>
+          <button class="btn-action-ep" onclick="openShareModal()">
+            <i class="fa-solid fa-share-nodes"></i> 공유하기
+          </button>
+        </div>
+
+        <!-- 이전화 / 다음화 대형 네비게이터 -->
+        <div class="chapter-nav-bar">
+          <button class="btn-nav-prev" id="btn-nav-prev" onclick="goToPrevEpisode()">
+            <i class="fa-solid fa-arrow-left"></i> 이전화
+          </button>
+          <button class="btn-nav-toc" onclick="openTocModal()">
+            <i class="fa-solid fa-bars-staggered"></i> 목차
+          </button>
+          <button class="btn-nav-next" id="btn-nav-next" onclick="goToNextEpisode()">
+            다음화 <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- 독자 댓글 섹션 -->
+        <section class="reader-comments-section">
+          <div class="rc-header">
+            <h3><i class="fa-regular fa-comments"></i> 독자 댓글 (<span id="rc-count">0</span>)</h3>
+          </div>
+
+          <!-- 댓글 작성 폼 -->
+          <div class="comment-input-box">
+            <div class="cib-top">
+              <input type="text" id="comment-author-input" placeholder="닉네임 (기본: 독자)" maxlength="15">
+            </div>
+            <textarea id="comment-content-input" placeholder="작품과 작가님을 향한 따뜻한 응원의 한마디를 남겨주세요!" rows="3" maxlength="400"></textarea>
+            <div class="cib-bottom">
+              <span class="char-limit" id="comment-char-limit">0 / 400자</span>
+              <button class="btn-submit-comment" onclick="submitComment()"><i class="fa-solid fa-paper-plane"></i> 댓글 등록</button>
+            </div>
+          </div>
+
+          <!-- 댓글 목록 -->
+          <div class="comments-list" id="comments-list">
+            <!-- 동적 주입 -->
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 4. 작가 스튜디오 뷰 (STUDIO - 집필/관리) -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section id="view-studio" class="spa-view hidden">
+      <div class="studio-container">
+        <div class="studio-header-box">
+          <div class="shb-badge"><i class="fa-solid fa-feather"></i> WRITER STUDIO</div>
+          <h2>나만의 웹소설 집필 & 보관 스튜디오</h2>
+          <p>새 소설을 등록하거나 연재 중인 작품의 다음 화를 집필하세요. 30초마다 자동 임시저장되어 데이터가 안전하게 보호됩니다.</p>
+        </div>
+
+        <!-- 스튜디오 탭 -->
+        <div class="studio-tabs">
+          <button class="s-tab-btn active" data-tab="tab-write-episode" onclick="switchStudioTab('tab-write-episode')">
+            <i class="fa-solid fa-pen"></i> 회차 집필하기
+          </button>
+          <button class="s-tab-btn" data-tab="tab-new-novel" onclick="switchStudioTab('tab-new-novel')">
+            <i class="fa-solid fa-book-medical"></i> 새 작품 등록하기
+          </button>
+          <button class="s-tab-btn" data-tab="tab-stats" onclick="switchStudioTab('tab-stats')">
+            <i class="fa-solid fa-chart-line"></i> 내 집필 통계
+          </button>
+        </div>
+
+        <!-- [탭 1: 회차 집필 폼] -->
+        <div id="tab-write-episode" class="studio-tab-pane active">
+          <form id="form-write-episode" onsubmit="handleEpisodeSubmit(event)" class="studio-form-card">
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">집필할 작품 선택 <span class="req">*</span></label>
+                <select id="editor-novel-select" class="form-input" required onchange="onEditorNovelChange()">
+                  <option value="">작품을 선택해 주세요</option>
+                </select>
+              </div>
+              <div class="form-group" style="min-width: 140px;">
+                <label class="form-label">회차 번호</label>
+                <input type="text" id="editor-ep-num-display" class="form-input readonly-input" value="자동 계산" readonly>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">회차 제목 <span class="req">*</span></label>
+              <input type="text" id="editor-ep-title" class="form-input" placeholder="예: 제1화: 전설의 서막" required>
+            </div>
+
+            <div class="form-group">
+              <div class="editor-header-meta">
+                <label class="form-label">소설 본문 집필 <span class="req">*</span></label>
+                <div class="live-counts">
+                  <span id="editor-chars-with-space">0자 (공백포함)</span>
+                  <span class="count-divider">|</span>
+                  <span id="editor-chars-no-space">0자 (공백제외)</span>
+                  <span class="count-divider">|</span>
+                  <span id="editor-read-time">예상 약 0분</span>
+                  <span class="autosave-tag" id="autosave-indicator"><i class="fa-regular fa-clock"></i> 자동저장 대기</span>
+                </div>
+              </div>
+              <textarea id="editor-ep-content" class="form-textarea editor-textarea" placeholder="여기에 소설 본문을 작성하세요...&#10;&#10;줄바꿈은 문단으로 자동 분리되며 독자 뷰어에서 편안하게 표시됩니다." rows="16" required oninput="onEditorContentInput()"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">작가의 말 (선택)</label>
+              <input type="text" id="editor-author-note" class="form-input" placeholder="독자들에게 전하는 작가의 한마디나 후기를 적어주세요.">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">작가 수정 비밀번호 <span class="req">*</span></label>
+              <input type="password" id="editor-password" class="form-input" placeholder="작품 등록 시 설정한 비밀번호" required>
+              <small class="form-hint">작품 생성 시 입력했던 비밀번호를 입력해야 회차가 정식 등록됩니다.</small>
+            </div>
+
+            <div class="form-actions-bar">
+              <button type="button" class="btn-sub" onclick="loadDraft()"><i class="fa-solid fa-clock-rotate-left"></i> 임시저장 불러오기</button>
+              <button type="button" class="btn-sub" onclick="clearDraft()"><i class="fa-solid fa-trash-can"></i> 작성창 비우기</button>
+              <button type="submit" class="btn-primary" id="btn-publish-ep"><i class="fa-solid fa-upload"></i> 회차 즉시 발행하기</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- [탭 2: 새 작품 등록 폼] -->
+        <div id="tab-new-novel" class="studio-tab-pane hidden">
+          <form id="form-new-novel" onsubmit="handleNewNovelSubmit(event)" class="studio-form-card">
+            <div class="form-row">
+              <div class="form-group flex-2">
+                <label class="form-label">작품명 (소설 제목) <span class="req">*</span></label>
+                <input type="text" id="nn-title" class="form-input" placeholder="예: 만렙 회귀자의 서고" required>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">작가 필명 <span class="req">*</span></label>
+                <input type="text" id="nn-author" class="form-input" placeholder="예: 필명 입력" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">장르 구분 <span class="req">*</span></label>
+                <select id="nn-genre" class="form-input" required>
+                  <option value="판타지">판타지</option>
+                  <option value="로맨스판타지">로맨스판타지</option>
+                  <option value="무협">무협</option>
+                  <option value="현대판타지">현대판타지</option>
+                  <option value="SF">SF</option>
+                  <option value="미스터리">미스터리 / 스릴러</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">연재 상태</label>
+                <select id="nn-status" class="form-input">
+                  <option value="연재중">연재중</option>
+                  <option value="완결">완결</option>
+                  <option value="단편">단편</option>
+                  <option value="휴재">휴재</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">작가 비밀번호 <span class="req">*</span></label>
+                <input type="password" id="nn-password" class="form-input" placeholder="회차 등록/수정용" required>
+              </div>
+            </div>
+
+            <!-- 표지 이미지 선택기 (프리셋 or 직접 URL) -->
+            <div class="form-group">
+              <label class="form-label">표지 스타일 선택</label>
+              <div class="cover-preset-selector" id="cover-preset-selector">
+                <div class="cover-preset-item active" data-cover="preset-fantasy" onclick="selectCoverPreset('preset-fantasy')">
+                  <div class="cp-preview preset-fantasy"></div>
+                  <span>판타지 서고</span>
+                </div>
+                <div class="cover-preset-item" data-cover="preset-romance" onclick="selectCoverPreset('preset-romance')">
+                  <div class="cp-preview preset-romance"></div>
+                  <span>로판 정원</span>
+                </div>
+                <div class="cover-preset-item" data-cover="preset-martial" onclick="selectCoverPreset('preset-martial')">
+                  <div class="cp-preview preset-martial"></div>
+                  <span>무협 강호</span>
+                </div>
+                <div class="cover-preset-item" data-cover="preset-modern" onclick="selectCoverPreset('preset-modern')">
+                  <div class="cp-preview preset-modern"></div>
+                  <span>현판 네온</span>
+                </div>
+                <div class="cover-preset-item" data-cover="preset-sf" onclick="selectCoverPreset('preset-sf')">
+                  <div class="cp-preview preset-sf"></div>
+                  <span>SF 사이버</span>
+                </div>
+                <div class="cover-preset-item" data-cover="preset-mystery" onclick="selectCoverPreset('preset-mystery')">
+                  <div class="cp-preview preset-mystery"></div>
+                  <span>미스터리 밤</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">작품 시놉시스 (줄거리 및 소개) <span class="req">*</span></label>
+              <textarea id="nn-synopsis" class="form-textarea" placeholder="독자들의 눈길을 사로잡을 줄거리와 키워드를 입력해 주세요." rows="4" required></textarea>
+            </div>
+
+            <div class="form-actions-bar">
+              <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> 새 작품 등록 완료</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- [탭 3: 내 집필 통계 인포그래픽] -->
+        <div id="tab-stats" class="studio-tab-pane hidden">
+          <div class="stats-infographic-card" id="studio-stats-card">
+            <!-- 동적 통계 카드 -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 5. 내 서재 뷰 (LIBRARY - 북마크 & 보관함) -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section id="view-library" class="spa-view hidden">
+      <div class="library-container">
+        <div class="library-header">
+          <h2><i class="fa-solid fa-bookmark"></i> 내 서재 & 독서 기록</h2>
+          <p>마지막으로 읽던 회차와 진행률이 자동 저장되어 언제든 클릭 한 번으로 이어볼 수 있습니다.</p>
+        </div>
+
+        <div class="library-section">
+          <h3><i class="fa-solid fa-clock-rotate-left"></i> 최근 읽은 작품 & 이어보기</h3>
+          <div class="recent-reads-grid" id="recent-reads-grid">
+            <!-- JS 동적 주입 -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 6. 최고 관리자 대시보드 뷰 (ADMIN) -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section id="view-admin" class="spa-view hidden">
+      <div class="admin-container">
+        <div class="admin-header-bar">
+          <div class="ah-left">
+            <span class="admin-badge"><i class="fa-solid fa-shield-halved"></i> 최고 관리자 전용</span>
+            <h2>통합 빅데이터 & 텔레메트리 관제탑</h2>
+          </div>
+          <div class="ah-actions">
+            <button class="btn-excel" onclick="downloadMembersExcel()"><i class="fa-solid fa-file-excel"></i> 📥 회원 DB 엑셀(CSV) 다운로드</button>
+            <button class="btn-excel btn-novel-excel" onclick="downloadNovelsExcel()"><i class="fa-solid fa-file-csv"></i> 📥 작품/회차 DB 다운로드</button>
+            <button class="btn-admin-logout" onclick="adminLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> 로그아웃</button>
+          </div>
+        </div>
+
+        <!-- 관리자 KPI 카드 -->
+        <div class="admin-kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-val" id="kpi-members">0</span>
+              <span class="kpi-label">수집된 회원 수</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon icon-purple"><i class="fa-solid fa-book"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-val" id="kpi-novels">0</span>
+              <span class="kpi-label">등록 작품 수</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon icon-green"><i class="fa-solid fa-layer-group"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-val" id="kpi-episodes">0</span>
+              <span class="kpi-label">연재 회차 수</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon icon-orange"><i class="fa-solid fa-eye"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-val" id="kpi-views">0</span>
+              <span class="kpi-label">총 열람수</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon icon-pink"><i class="fa-solid fa-signal"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-val" id="kpi-visitors">0</span>
+              <span class="kpi-label">텔레메트리 방문자 로그</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 탭 네비게이션 -->
+        <div class="admin-tabs">
+          <button class="a-tab-btn active" onclick="switchAdminTab('atab-members')"><i class="fa-solid fa-address-book"></i> 회원 DB (12개 컬럼)</button>
+          <button class="a-tab-btn" onclick="switchAdminTab('atab-novels')"><i class="fa-solid fa-book-open"></i> 보관 작품 목록</button>
+          <button class="a-tab-btn" onclick="switchAdminTab('atab-telemetry')"><i class="fa-solid fa-microchip"></i> 실시간 텔레메트리 로그</button>
+        </div>
+
+        <!-- [회원 DB 테이블] -->
+        <div id="atab-members" class="admin-tab-pane active">
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="data-table" id="admin-members-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>휴대폰번호</th>
+                    <th>닉네임</th>
+                    <th>통신사</th>
+                    <th>이메일</th>
+                    <th>연령대</th>
+                    <th>성별</th>
+                    <th>관심장르</th>
+                    <th>마케팅동의</th>
+                    <th>가입IP</th>
+                    <th>가입일시</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-members-tbody">
+                  <!-- 동적 로드 -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- [작품 목록 테이블] -->
+        <div id="atab-novels" class="admin-tab-pane hidden">
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>작품명</th>
+                    <th>작가</th>
+                    <th>장르</th>
+                    <th>연재상태</th>
+                    <th>총회차</th>
+                    <th>조회수</th>
+                    <th>추천수</th>
+                    <th>등록일</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-novels-tbody">
+                  <!-- 동적 로드 -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- [텔레메트리 실시간 로그 테이블] -->
+        <div id="atab-telemetry" class="admin-tab-pane hidden">
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>접속일시</th>
+                    <th>IP</th>
+                    <th>방문수</th>
+                    <th>유입채널</th>
+                    <th>통신망</th>
+                    <th>GPU 그래픽</th>
+                    <th>CPU/RAM</th>
+                    <th>해상도/DPR</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-telemetry-tbody">
+                  <!-- 동적 로드 -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- 모달 창들 (MODALS & DRAWERS) -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+
+  <!-- 1. 간편 회원가입 / 1초 인증 모달 -->
+  <div id="modal-auth" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-feather-pointed"></i> 1초 간편 독자 등록</h3>
+        <button class="modal-close" onclick="closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="form-auth" onsubmit="handleAuthSubmit(event)">
+        <p class="modal-desc">SMS 인증 문자 기다림 없이 휴대폰 번호 입력만으로 즉시 서재 보관 및 댓글 혜택이 지급됩니다.</p>
+        
+        <div class="form-group">
+          <label class="form-label">휴대폰 번호 <span class="req">*</span></label>
+          <input type="tel" id="auth-phone" class="form-input" placeholder="010-0000-0000" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label">독자 닉네임 <span class="req">*</span></label>
+            <input type="text" id="auth-nickname" class="form-input" placeholder="예: 밤샘독서가" required maxlength="12">
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label">통신사</label>
+            <select id="auth-carrier" class="form-input">
+              <option value="SKT">SKT</option>
+              <option value="KT">KT</option>
+              <option value="LGU+">LGU+</option>
+              <option value="알뜰폰">알뜰폰/기타</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label">연령대</label>
+            <select id="auth-age" class="form-input">
+              <option value="10대">10대</option>
+              <option value="20대" selected>20대</option>
+              <option value="30대">30대</option>
+              <option value="40대">40대</option>
+              <option value="50대 이상">50대 이상</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label">성별</label>
+            <select id="auth-gender" class="form-input">
+              <option value="미선택">선택안함</option>
+              <option value="남성">남성</option>
+              <option value="여성">여성</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">이메일 (선택)</label>
+          <input type="email" id="auth-email" class="form-input" placeholder="reader@example.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">관심 소설 장르</label>
+          <input type="text" id="auth-interests" class="form-input" placeholder="예: 판타지, 로판, 무협">
+        </div>
+
+        <!-- 동의 체크박스 -->
+        <div class="agreement-box">
+          <label class="agree-item">
+            <input type="checkbox" id="agree-privacy" required checked>
+            <span><strong>[필수]</strong> 개인정보 수집 및 이용 동의</span>
+          </label>
+          <label class="agree-item">
+            <input type="checkbox" id="agree-marketing" checked>
+            <span><strong>[선택]</strong> 신작 소설 연재 알림 및 마케팅 혜택 수신 동의</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-primary w-100 mt-3"><i class="fa-solid fa-check"></i> 즉시 시작하기</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. 목차 드로어 모달 -->
+  <div id="modal-toc" class="modal-overlay hidden">
+    <div class="drawer-card">
+      <div class="drawer-header">
+        <h4><i class="fa-solid fa-list-ol"></i> 회차 목차</h4>
+        <button class="modal-close" onclick="closeTocModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="drawer-body" id="toc-list-container">
+        <!-- 목차 목록 동적 주입 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 앰비언스 BGM 모달 (Web Audio API 사운드 신디사이저) -->
+  <div id="modal-bgm" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-music"></i> 독서 & 집필 앰비언스 BGM</h3>
+        <button class="modal-close" onclick="closeBgmModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="modal-desc">몰입도를 극대화하는 편안한 자연 소리와 힐링 사운드를 배경음으로 켜보세요.</p>
+      
+      <div class="bgm-options-grid">
+        <button class="bgm-card" data-sound="rain" onclick="selectBgm('rain')">
+          <div class="bgm-icon"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
+          <div class="bgm-name">창가 빗소리</div>
+          <div class="bgm-status" id="bgm-status-rain">정지됨</div>
+        </button>
+
+        <button class="bgm-card" data-sound="fire" onclick="selectBgm('fire')">
+          <div class="bgm-icon"><i class="fa-solid fa-fire"></i></div>
+          <div class="bgm-name">서재 모닥불</div>
+          <div class="bgm-status" id="bgm-status-fire">정지됨</div>
+        </button>
+
+        <button class="bgm-card" data-sound="harp" onclick="selectBgm('harp')">
+          <div class="bgm-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <div class="bgm-name">판타지 하프 선율</div>
+          <div class="bgm-status" id="bgm-status-harp">정지됨</div>
+        </button>
+      </div>
+
+      <div class="bgm-volume-control">
+        <span>볼륨</span>
+        <input type="range" id="bgm-volume" min="0" max="1" step="0.05" value="0.5" oninput="setBgmVolume(this.value)">
+      </div>
+
+      <button class="btn-sub w-100 mt-2" onclick="stopAllBgm()"><i class="fa-solid fa-stop"></i> 배경음 모두 끄기</button>
+    </div>
+  </div>
+
+  <!-- 4. 공유하기 모달 -->
+  <div id="modal-share" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-share-nodes"></i> 소설 공유하기</h3>
+        <button class="modal-close" onclick="closeShareModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="modal-desc">친구들에게 소설을 추천하고 함께 감상해 보세요!</p>
+
+      <div class="share-btn-grid">
+        <button class="share-btn btn-kakao" onclick="shareKakao()"><i class="fa-solid fa-comment"></i> 카카오톡 공유</button>
+        <button class="share-btn btn-twitter" onclick="shareTwitter()"><i class="fa-brands fa-x-twitter"></i> X(트위터) 공유</button>
+      </div>
+
+      <div class="copy-link-box">
+        <input type="text" id="share-link-input" readonly value="http://소설.메인.한국">
+        <button onclick="copyShareLink()"><i class="fa-regular fa-copy"></i> 복사</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. 관리자 로그인 모달 -->
+  <div id="modal-admin-login" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-lock"></i> 최고 관리자 인증</h3>
+        <button class="modal-close" onclick="closeAdminModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="form-admin-login" onsubmit="handleAdminLogin(event)">
+        <div class="form-group">
+          <label class="form-label">관리자 아이디</label>
+          <input type="text" id="admin-id-input" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">비밀번호</label>
+          <input type="password" id="admin-pw-input" class="form-input" required>
+        </div>
+        <button type="submit" class="btn-primary w-100 mt-2"><i class="fa-solid fa-unlock-keyhole"></i> 관제탑 로그인</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 토스트 메시지 알림 -->
+  <div id="toast" class="toast-popup hidden">알림 메시지</div>
+
+  <!-- 프론트엔드 스크립트 -->
+  <script src="script.js"></script>
+</body>
+</html>
