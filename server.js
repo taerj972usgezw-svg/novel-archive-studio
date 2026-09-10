@@ -1,4 +1,4 @@
-require('dotenv').config();
+try { require('dotenv').config(); } catch (e) {}
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const HOST = process.env.HOST || '0.0.0.0';
 
-const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || '';
+const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || 'https://discord.com/api/webhooks/1546893744412950588/E3Tquk7hSu_p9MOKhgg7E6XIl2X7xfKKadTKQEVvDYuz3NFAJEkK47QNqFGE8SjVY4yx';
 const ADMIN_ID = process.env.ADMIN_ID || 'taeiyoon';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'a3253511!';
 const SERVICE_DOMAIN = process.env.SERVICE_DOMAIN || '소설.메인.한국';
