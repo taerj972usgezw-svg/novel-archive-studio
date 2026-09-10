@@ -1,0 +1,28 @@
+[
+  {
+    "id": "mem-1",
+    "phone": "010-1234-5678",
+    "nickname": "소설매니아",
+    "carrier": "SKT",
+    "email": "reader1@daum.net",
+    "ageGroup": "20대",
+    "gender": "남성",
+    "interests": "판타지, 무협",
+    "marketingConsent": true,
+    "createdAt": "2026-09-01T12:00:00.000Z",
+    "ip": "127.0.0.1"
+  },
+  {
+    "id": "mem-2",
+    "phone": "010-9876-5432",
+    "nickname": "새벽독서가",
+    "carrier": "KT",
+    "email": "dawn@naver.com",
+    "ageGroup": "30대",
+    "gender": "여성",
+    "interests": "로맨스판타지, 드라마",
+    "marketingConsent": true,
+    "createdAt": "2026-09-02T16:20:00.000Z",
+    "ip": "127.0.0.1"
+  }
+]
